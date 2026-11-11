@@ -1,0 +1,133 @@
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">PANEL DE CONTROL</p>
+    <h2>Gestión de tareas</h2>
+    <p class="intro">Administra actividades y revisa su estado desde una sola pantalla.</p>
+  </div>
+  <div class="heading-icon">✓</div>
+</section>
+
+<section class="form-card">
+  <div class="section-title">
+    <div>
+      <h3>Registrar una tarea</h3>
+      <p>Completa los campos para añadir una nueva actividad.</p>
+    </div>
+    <span class="mini-label">NUEVA TAREA</span>
+  </div>
+
+  <form (ngSubmit)="agregar()" #formTarea="ngForm">
+    <div class="form-grid">
+      <label class="field field-title">
+        <span>Título</span>
+        <input
+          type="text"
+          name="titulo"
+          [(ngModel)]="nuevaTarea.titulo"
+          placeholder="Ej. Revisar informe"
+          required
+          maxlength="70">
+      </label>
+
+      <label class="field">
+        <span>Prioridad</span>
+        <select name="prioridad" [(ngModel)]="nuevaTarea.prioridad">
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+      </label>
+
+      <label class="field field-description">
+        <span>Descripción</span>
+        <input
+          type="text"
+          name="descripcion"
+          [(ngModel)]="nuevaTarea.descripcion"
+          placeholder="Describe brevemente la actividad"
+          required
+          maxlength="140">
+      </label>
+
+      <button class="btn-primary" type="submit" [disabled]="!formTarea.valid || guardando">
+        {{ guardando ? 'Guardando...' : '+ Agregar tarea' }}
+      </button>
+    </div>
+  </form>
+</section>
+
+<section class="list-card">
+  <div class="section-title list-title">
+    <div>
+      <h3>Lista de tareas</h3>
+      <p>Datos consultados mediante el servicio REST y mostrados con el Pipe Async.</p>
+    </div>
+    <span class="live-indicator"><span></span> ACTUALIZADO</span>
+  </div>
+
+  <div *ngIf="tareas$ | async as tareas; else cargando">
+    <div class="table-wrap" *ngIf="tareas.length > 0; else sinTareas">
+      <table class="tabla-spa">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título y descripción</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tarea of tareas">
+            <td class="id-cell">#{{ tarea.id }}</td>
+            <td>
+              <strong class="task-name">{{ tarea.titulo }}</strong>
+              <span class="task-description">{{ tarea.descripcion }}</span>
+            </td>
+            <td>
+              <span class="priority" [ngClass]="'priority-' + tarea.prioridad.toLowerCase()">
+                {{ tarea.prioridad }}
+              </span>
+            </td>
+            <td>
+              <span class="status" [class.status-done]="tarea.completada">
+                <span class="status-dot"></span>
+                {{ tarea.completada ? 'Completada' : 'Pendiente' }}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn-delete" (click)="eliminar(tarea.id)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #sinTareas>
+      <div class="empty-state">
+        <span>☷</span>
+        <strong>No hay tareas registradas</strong>
+        <p>Agrega una nueva tarea usando el formulario superior.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #cargando>
+    <div class="loading-state">
+      <span class="loader"></span>
+      <p>Consultando datos desde el servicio REST...</p>
+    </div>
+  </ng-template>
+</section>
+
+<div class="technical-note">
+  <strong>Componentes aplicados:</strong>
+  <span>HttpClient</span>
+  <span>RxJS</span>
+  <span>Interceptor</span>
+  <span>AuthGuard</span>
+  <span>Pipe Async</span>
+  <span>Router</span>
+</div>
